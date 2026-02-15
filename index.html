@@ -1,19 +1,30 @@
 <!DOCTYPE html>
+<!-- Updated spacing 2026-02-15: if you don't see this in View Source, hard-refresh (Cmd+Shift+R) or open the local file -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liz Osaki</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Karla:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #F5F0E8;
-            --text: #2C2A25;
-            --text-light: #7A756A;
-            --accent: #E8553D;
-            --card-bg: #FFFDF8;
-            --card-border: #E5DFD3;
-            --grid-color: rgba(44, 42, 37, 0.04);
+            /* This (pastel) */
+            --cream: #F8F5EE;
+            --blush: #F2D9D0;
+            --lavender: #D4CCEB;
+            --sage: #C8D5C0;
+            --sky: #C4D4E0;
+            --text-dark: #1A1A1A;
+            --text-mid: #6B6560;
+            --text-light: #A09A92;
+
+            /* That (dopamine) */
+            --hot-pink: #FF2E8B;
+            --electric-blue: #2B4AFF;
+            --acid-green: #BFFF00;
+            --soft-peach: #FFE5D9;
+            --deep-navy: #0A0E2A;
+            --white: #FFFEF7;
         }
 
         * {
@@ -23,201 +34,646 @@
         }
 
         body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: 'Karla', sans-serif;
             min-height: 100vh;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
+            color: var(--text-dark);
         }
 
-        /* Subtle grid background */
-        body::before {
-            content: '';
+        /* ========================================
+           SHARED TRANSITION
+           ======================================== */
+        .bg, .bg-gradient, .blob, .page, .content, .imagery, 
+        .name, .role, .aside, .link, .link-tag, .link-arrow,
+        .bottom-bar, .bottom-bar span, .toggle-btn, .divider,
+        .glow {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========================================
+           THEME: THIS (pastel — default)
+           ======================================== */
+
+        /* Background */
+        .bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image:
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 40px 40px;
+            z-index: 0;
+            background: var(--cream);
+        }
+
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse 70% 60% at 20% 30%, var(--lavender) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 50% at 80% 20%, var(--sky) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 60% at 60% 80%, var(--blush) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 10% 80%, var(--sage) 0%, transparent 70%);
+            opacity: 0.6;
+            animation: gradient-shift 20s ease-in-out infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.05) rotate(0.5deg); }
+            50% { transform: scale(1.02) rotate(-0.3deg); }
+            75% { transform: scale(1.07) rotate(0.2deg); }
+        }
+
+        /* Blobs (hidden in "this" mode) */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0;
             pointer-events: none;
             z-index: 0;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 80px 24px;
-            position: relative;
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--hot-pink);
+            top: -15%;
+            right: -10%;
+            animation: drift-1 12s ease-in-out infinite;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--electric-blue);
+            bottom: -10%;
+            left: -8%;
+            animation: drift-2 15s ease-in-out infinite;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: var(--acid-green);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: drift-3 10s ease-in-out infinite;
+        }
+
+        @keyframes drift-1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-40px, 30px) scale(1.1); }
+            66% { transform: translate(20px, -20px) scale(0.95); }
+        }
+
+        @keyframes drift-2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -40px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        @keyframes drift-3 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        /* Cursor glow (hidden in "this" mode) */
+        .glow {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 46, 139, 0.15) 0%, transparent 70%);
+            pointer-events: none;
             z-index: 1;
+            transform: translate(-50%, -50%);
+            opacity: 0;
         }
 
-        header {
-            margin-bottom: 80px;
+        /* Grain overlay */
+        .grain {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            z-index: 1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
         }
 
+        /* Layout */
+        .page {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr;
+            gap: 0;
+        }
+
+        /* Left side - imagery */
+        .imagery {
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            padding: 24px;
+            padding-right: 12px;
+            opacity: 1;
+            max-width: 100%;
+        }
+
+        .img-frame {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 120px;
+        }
+        .img-frame img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .img-frame:first-child {
+            background: linear-gradient(135deg, var(--blush), var(--lavender));
+        }
+
+        .img-frame:nth-child(2) {
+            background: linear-gradient(135deg, var(--sage), var(--sky));
+        }
+
+        /* Right side - content: align from top so spacing between sections is visible */
+        .content {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 80px 48px 120px 48px;
+        }
+
+        /* Name */
         .name {
-            font-family: 'Space Mono', monospace;
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 0.9;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            color: var(--text-dark);
             margin-bottom: 16px;
         }
 
-        .title {
-            font-size: 1.25rem;
-            color: var(--text-light);
-            margin-bottom: 8px;
+        .name .first {
+            display: block;
         }
 
-        .company {
+        .name .last {
+            display: block;
+            font-weight: 700;
+            opacity: 0.5;
+            -webkit-text-stroke: 0px transparent;
+        }
+
+        /* Divider */
+        .divider {
+            width: 48px;
+            height: 1px;
+            background: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        /* Role */
+        .role {
             font-size: 1rem;
+            font-weight: 300;
+            color: var(--text-mid);
+            line-height: 1.6;
+            margin-bottom: 8px;
+            letter-spacing: 0.01em;
+        }
+
+        /* Aside */
+        .aside {
+            font-family: 'Syne', sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 0.9rem;
             color: var(--text-light);
+            margin-bottom: 64px;
         }
 
-        .company a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .company a:hover {
-            text-decoration: underline;
-        }
-
-        .section {
-            margin-bottom: 60px;
-        }
-
-        .section-title {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-light);
-            margin-bottom: 24px;
-        }
-
-        .project-list {
+        /* Links */
+        .links {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 28px;
         }
 
-        .project-link {
-            display: block;
-            padding: 24px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
+        .link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
             text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .project-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border-color: var(--accent);
-        }
-
-        .project-name {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 8px;
-        }
-
-        .project-desc {
-            font-size: 0.95rem;
-            color: var(--text-light);
-            line-height: 1.5;
-        }
-
-        .arrow {
-            display: inline-block;
-            margin-left: 8px;
-            transition: transform 0.2s ease;
-        }
-
-        .project-link:hover .arrow {
-            transform: translateX(4px);
-        }
-
-        .bio {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            color: var(--text-light);
-            max-width: 600px;
-        }
-
-        footer {
-            margin-top: 80px;
-            padding-top: 40px;
-            border-top: 1px solid var(--card-border);
+            color: var(--text-dark);
             font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .link:hover {
+            padding-left: 12px;
+        }
+
+        .link-arrow {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0.4;
+        }
+
+        .link:hover .link-arrow {
+            transform: translateX(4px);
+            opacity: 1;
+        }
+
+        .link-tag {
+            font-size: 0.6rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-light);
+            margin-left: auto;
+        }
+
+        /* ========================================
+           BOTTOM BAR + TOGGLE
+           ======================================== */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bottom-bar span {
+            font-size: 0.6rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
             color: var(--text-light);
         }
 
-        footer a {
-            color: var(--accent);
-            text-decoration: none;
+        /* Toggle */
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        footer a:hover {
-            text-decoration: underline;
+        .toggle-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            padding: 4px 0;
+            opacity: 0.35;
+            transition: opacity 0.3s ease, color 0.3s ease;
         }
 
-        @media (max-width: 640px) {
-            .container {
-                padding: 60px 20px;
+        .toggle-label:hover {
+            opacity: 0.6;
+        }
+
+        .toggle-label.active {
+            opacity: 1;
+        }
+
+        .toggle-track {
+            width: 36px;
+            height: 18px;
+            background: rgba(26, 26, 26, 0.1);
+            border-radius: 100px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.4s ease;
+        }
+
+        .toggle-knob {
+            width: 14px;
+            height: 14px;
+            background: var(--text-dark);
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========================================
+           THEME: THAT (dopamine)
+           ======================================== */
+        body.that {
+            color: var(--white);
+            cursor: crosshair;
+        }
+
+        body.that .bg {
+            background: var(--deep-navy);
+        }
+
+        body.that .bg-gradient {
+            opacity: 0;
+        }
+
+        body.that .blob {
+            opacity: 0.5;
+        }
+
+        body.that .glow {
+            opacity: 1;
+        }
+
+        body.that .imagery {
+            opacity: 0;
+            max-width: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body.that .page {
+            grid-template-columns: 1fr;
+        }
+
+        body.that .content {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 32px;
+        }
+
+        body.that .name {
+            color: var(--white);
+            font-size: clamp(3.5rem, 10vw, 6.5rem);
+            line-height: 0.92;
+        }
+
+        body.that .name .last {
+            opacity: 1;
+            color: transparent;
+            -webkit-text-stroke: 2px var(--hot-pink);
+        }
+
+        body.that .divider {
+            background: var(--hot-pink);
+            width: 60px;
+            opacity: 0.5;
+        }
+
+        body.that .role {
+            color: var(--soft-peach);
+        }
+
+        body.that .aside {
+            color: var(--acid-green);
+            opacity: 0.7;
+        }
+
+        body.that .links {
+            flex-direction: row;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        body.that .link {
+            color: var(--white);
+            border-bottom: none;
+            background: var(--hot-pink);
+            border: 2px solid var(--hot-pink);
+            padding: 14px 32px;
+            border-radius: 100px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        body.that .link:nth-child(2) {
+            background: transparent;
+            border-color: rgba(255, 254, 247, 0.25);
+        }
+
+        body.that .link:hover {
+            padding-left: 32px;
+            transform: translateY(-2px);
+        }
+
+        body.that .link:nth-child(1):hover {
+            background: transparent;
+            color: var(--hot-pink);
+            box-shadow: 0 8px 30px rgba(255, 46, 139, 0.3);
+        }
+
+        body.that .link:nth-child(2):hover {
+            border-color: var(--acid-green);
+            color: var(--acid-green);
+            box-shadow: 0 8px 30px rgba(191, 255, 0, 0.15);
+        }
+
+        body.that .link-arrow,
+        body.that .link-tag {
+            display: none;
+        }
+
+        body.that .bottom-bar span {
+            color: rgba(255, 254, 247, 0.25);
+        }
+
+        body.that .toggle-label {
+            color: var(--white);
+        }
+
+        body.that .toggle-track {
+            background: rgba(255, 254, 247, 0.15);
+        }
+
+        body.that .toggle-knob {
+            background: var(--hot-pink);
+            left: 20px;
+        }
+
+        /* ========================================
+           MOBILE
+           ======================================== */
+        @media (max-width: 768px) {
+            .page {
+                grid-template-columns: 1fr;
+                grid-template-rows: 45vh auto;
+            }
+
+            .imagery {
+                grid-template-rows: 1fr;
+                grid-template-columns: 1fr 1fr;
+                padding: 16px;
+                gap: 8px;
+            }
+
+            .content {
+                padding: 32px 24px 100px;
+            }
+
+            .bottom-bar {
+                padding: 20px 24px;
+            }
+
+            body.that .name .last {
+                -webkit-text-stroke: 1.5px var(--hot-pink);
+            }
+
+            body.that .links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            body.that .link {
+                width: 100%;
+                max-width: 260px;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .imagery {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr;
+            }
+
+            .img-frame:nth-child(2) {
+                display: none;
             }
 
             .name {
-                font-size: 2rem;
+                font-size: 2.6rem;
             }
 
-            .title {
-                font-size: 1.1rem;
+            .glow {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1 class="name">Liz Osaki</h1>
-            <p class="title">Staff Product Designer</p>
-            <p class="company">Currently at <a href="https://www.doordash.com" target="_blank">DoorDash</a></p>
-        </header>
 
-        <section class="section">
-            <h2 class="section-title">About</h2>
-            <p class="bio">
-                I design for the Parcels team at DoorDash, working across Drive Retail and core Drive.
-                I'm learning to build things with AI tools — turning design ideas into working prototypes and experiments.
-            </p>
-        </section>
-
-        <section class="section">
-            <h2 class="section-title">Projects</h2>
-            <div class="project-list">
-                <a href="tiny-things/" class="project-link">
-                    <div class="project-name">tiny things<span class="arrow">→</span></div>
-                    <p class="project-desc">A collection of small prototypes, tools, and experiments built while learning to code with AI.</p>
-                </a>
-
-                <!-- Future projects go here -->
-            </div>
-        </section>
-
-        <footer>
-            <p>Built with AI assistance • 2026</p>
-        </footer>
+    <!-- Backgrounds -->
+    <div class="bg">
+        <div class="bg-gradient"></div>
     </div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="glow" id="glow"></div>
+    <div class="grain"></div>
+
+    <!-- Main layout -->
+    <div class="page">
+
+        <!-- Left: imagery (pastel mode only) -->
+        <div class="imagery">
+            <div class="img-frame">
+                <img src="https://images.unsplash.com/photo-1765033582060-8f8592c04be9?q=80&w=2258&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+            </div>
+            <div class="img-frame">
+                <img src="https://images.unsplash.com/photo-1769084644382-2d4c33ee1b55?q=80&w=2292&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h1 class="name">
+                <span class="first">Liz</span>
+                <span class="last">Osaki</span>
+            </h1>
+
+            <div class="divider"></div>
+
+            <p class="role">Staff Product Designer for Parcels & Retail</p>
+            <p class="aside">(+ I know too much about Drive)</p>
+
+            <div class="links">
+                <a href="tiny-things/" class="link">
+                    <span class="link-arrow">→</span>
+                    Tiny Things
+                    <span class="link-tag">Experiments</span>
+                </a>
+                <a href="#" class="link">
+                    <span class="link-arrow">→</span>
+                    Other Things
+                    <span class="link-tag">Collection</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom bar with toggle -->
+    <div class="bottom-bar">
+        <span>2026</span>
+
+        <div class="toggle">
+            <span class="toggle-label active" id="labelThis" onclick="setTheme('this')">this</span>
+            <div class="toggle-track" id="track" onclick="toggleTheme()">
+                <div class="toggle-knob" id="knob"></div>
+            </div>
+            <span class="toggle-label" id="labelThat" onclick="setTheme('that')">that</span>
+        </div>
+
+        <span>Oakland, CA</span>
+    </div>
+
+    <script>
+        // Cursor glow
+        const glow = document.getElementById('glow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        // Theme toggle
+        let currentTheme = 'this';
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            if (theme === 'that') {
+                document.body.classList.add('that');
+            } else {
+                document.body.classList.remove('that');
+            }
+            document.getElementById('labelThis').classList.toggle('active', theme === 'this');
+            document.getElementById('labelThat').classList.toggle('active', theme === 'that');
+        }
+
+        function toggleTheme() {
+            setTheme(currentTheme === 'this' ? 'that' : 'this');
+        }
+    </script>
 </body>
 </html>
