@@ -1,10 +1,10 @@
 # lizodd.github.io
 
-Personal portfolio site for Liz Osaki, Staff Product Designer at DoorDash.
+Personal site for Liz Osaki, Staff Product Designer at DoorDash.
 
 ## Projects
 
-- [tiny things](https://lizodd.github.io/tiny-things) - A collection of small prototypes and experiments
+- [tiny things](https://lizodd.github.io/tiny-things) - A collection of small experiments.
 
 ## Local Development
 
