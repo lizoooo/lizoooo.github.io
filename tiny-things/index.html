@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny Things</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <a href="https://lizoooo.github.io/" class="back-link">← Back</a>
+        <header>
+            <h1 class="site-title">tiny things<span class="dot">.</span></h1>
+            <p class="site-description">
+                A collection of tiny things with
+                <span class="mono">AI</span> tools.
+            </p>
+            <div class="counter">
+                <span class="counter-dot"></span>
+                <span id="project-count">0</span> things and counting
+            </div>
+        </header>
+
+        <section class="projects">
+            <!-- Most recent first: Watercolor Break Time -->
+            <div class="project-card-wrap">
+            <a href="https://shore-lurch-35174317.figma.site" target="_blank" rel="noopener noreferrer" class="project-card">
+                <div class="project-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1630609083938-3acb39a06392?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Watercolor Break Time" class="project-thumbnail-img">
+                </div>
+                <div class="project-info">
+                    <div class="project-number">No. 03</div>
+                    <h2 class="project-title">Watercolor Break Time</h2>
+                    <p class="project-description">Take a digital analog paint break to get out of your head and onto the page. Styling still in progress, eep.
+
+                    </p>
+                    <div class="project-meta">
+                        <span class="tag tool">Figma Make</span>
+                        <span class="tag">tool</span>
+                    </div>
+                    <span class="project-link">View project</span>
+                </div>
+            </a>
+            </div>
+
+            <!-- Cold Open -->
+            <div class="project-card-wrap">
+            <a href="projects/cold-open/index.html" class="project-card">
+                <div class="project-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1588775587739-7b7e1b11f4e7?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Cold Open project" class="project-thumbnail-img">
+                </div>
+                <div class="project-info">
+                    <div class="project-number">No. 02</div>
+                    <h2 class="project-title">Cold Open</h2>
+                    <p class="project-description">Meetings don't have to suck. Kick off your kickoff with a question for the group.</p>
+                    <div class="project-meta">
+                        <span class="tag tool">Claude</span>
+                        <span class="tag">tool</span>
+                    </div>
+                    <span class="project-link">View project</span>
+                </div>
+            </a>
+            </div>
+
+            <!-- Dogear -->
+            <div class="project-card-wrap">
+            <a href="https://dogear-book-recommendations.lovable.app" target="_blank" rel="noopener noreferrer" class="project-card">
+                <div class="project-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1593430980369-68efc5a5eb34?q=80&w=2685&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Books on a shelf" class="project-thumbnail-img">
+                </div>
+                <div class="project-info">
+                    <div class="project-number">No. 01</div>
+                    <h2 class="project-title">Dogear</h2>
+                    <p class="project-description">When you just want another book like the ones you've loved before - get recs.</p>
+                    <div class="project-meta">
+                        <span class="tag tool">Lovable</span>
+                        <span class="tag">prototype</span>
+                    </div>
+                    <span class="project-link">View project</span>
+                </div>
+            </a>
+            </div>
+
+            <!-- Empty state -->
+            <div class="project-card-wrap">
+            <div class="project-card empty">
+                <div class="empty-content">
+                    <div class="plus">+</div>
+                    <p id="empty-state-text">your first tiny thing goes here</p>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <section class="notes-section">
+            <h3 class="notes-title">What is this?</h3>
+            <p class="notes-content">
+                This is where I collect the things I make along the way.
+                Nothing here is polished, and I have no idea what I'm doing. Enjoy!
+            </p>
+        </section>
+
+        <footer>
+            <p>tiny things — 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        // Count actual projects (not empty state)
+        const projectCount = document.querySelectorAll('.project-card:not(.empty)').length;
+        document.getElementById('project-count').textContent = projectCount;
+
+        // Empty state message: first vs next
+        const emptyStateText = document.getElementById('empty-state-text');
+        emptyStateText.textContent = projectCount === 0
+            ? 'your first tiny thing goes here!'
+            : 'your next tiny thing goes here!';
+    </script>
+</body>
+</html>

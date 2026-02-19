@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cold Open</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Anybody:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #D2FF3A;
+            --text: #1A0BF5;
+            --accent: #FF2D6B;
+            --white: #FFFEF5;
+            /* Text on accent: light for dark accents, dark for light accents (WCAG AA) */
+            --accent-text: #FFFEF5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            max-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+            cursor: crosshair;
+            /* Reserve space so fixed hint doesn't cover nav */
+            padding-bottom: 36px;
+        }
+
+        /* Header - solid background so it never shows content through; never shrinks */
+        header {
+            padding: 24px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+            min-width: 0;
+            background: var(--bg);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-family: 'Anybody', sans-serif;
+            font-weight: 900;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+
+        .back-link {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text);
+            text-decoration: none;
+            opacity: 0.6;
+            transition: opacity 0.15s ease;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .counter-badge {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: var(--text);
+            color: var(--bg);
+            padding: 6px 14px;
+            border-radius: 100px;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+        }
+
+        /* Main content - scrolls when question is tall; content stays below header */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 32px 50px;
+            position: relative;
+            min-width: 0;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Question display - centered when space allows, stays in view when tight */
+        .question-container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            min-width: 0;
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+
+        /* Scale with both width and height so question always fits in view */
+        .question-text {
+            font-family: 'Anybody', sans-serif;
+            font-weight: 900;
+            font-size: clamp(1rem, min(8vw, 10vh), 7rem);
+            line-height: 0.95;
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .question-text.exiting {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .question-text.entering {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        /* Category tag - uses --accent-text for accessible contrast on accent bg */
+        .category {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            background: var(--accent);
+            color: var(--accent-text);
+            padding: 6px 16px;
+            border-radius: 100px;
+            margin-bottom: 32px;
+            transition: opacity 0.15s ease;
+        }
+
+        .category.exiting {
+            opacity: 0;
+        }
+
+        /* Navigation - centered on page */
+        nav {
+            padding: 24px 50px 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .nav-btn {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: 3px solid var(--text);
+            background: var(--text);
+            color: var(--bg);
+            padding: 14px 32px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--accent-text);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.96);
+        }
+
+        .shuffle-btn {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            padding: 10px 16px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.15s ease;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .shuffle-btn:hover {
+            opacity: 1;
+        }
+
+        /* Floating decorative elements */
+        .deco {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .deco-circle {
+            width: 300px;
+            height: 300px;
+            border: 4px solid var(--text);
+            border-radius: 50%;
+            opacity: 0.06;
+            top: -80px;
+            right: -80px;
+        }
+
+        .deco-circle-2 {
+            width: 200px;
+            height: 200px;
+            border: 4px solid var(--accent);
+            border-radius: 50%;
+            opacity: 0.08;
+            bottom: 40px;
+            left: -60px;
+        }
+
+        .deco-star {
+            font-size: 8rem;
+            opacity: 0.04;
+            bottom: 60px;
+            right: 40px;
+            color: var(--text);
+            animation: spin 20s linear infinite;
+        }
+
+        /* Wacky extra shapes – subtle */
+        .deco-triangle {
+            width: 0;
+            height: 0;
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 140px solid var(--accent);
+            opacity: 0.05;
+            top: 30%;
+            left: -40px;
+            transform: rotate(-15deg);
+        }
+
+        .deco-blob {
+            width: 180px;
+            height: 120px;
+            background: var(--text);
+            border-radius: 60% 40% 50% 50% / 50% 60% 40% 50%;
+            opacity: 0.04;
+            top: 50%;
+            right: -30px;
+            transform: rotate(25deg);
+        }
+
+        .deco-diamond {
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            transform: rotate(45deg);
+            opacity: 0.05;
+            top: 15%;
+            right: 25%;
+        }
+
+        .deco-squiggle {
+            width: 120px;
+            height: 40px;
+            border: 4px solid var(--text);
+            border-radius: 50%;
+            opacity: 0.05;
+            bottom: 25%;
+            left: 15%;
+            transform: rotate(-20deg);
+        }
+
+        .deco-star-2 {
+            font-size: 5rem;
+            opacity: 0.03;
+            top: 60%;
+            left: 10%;
+            color: var(--accent);
+            animation: spin 25s linear infinite reverse;
+        }
+
+        .deco-plus {
+            width: 4px;
+            height: 80px;
+            background: var(--text);
+            opacity: 0.04;
+            top: 20%;
+            right: 15%;
+            transform: rotate(-30deg);
+        }
+
+        .deco-plus::after {
+            content: "";
+            position: absolute;
+            left: -38px;
+            top: 38px;
+            width: 80px;
+            height: 4px;
+            background: var(--text);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Keyboard hint */
+        .hint {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text);
+            opacity: 0.2;
+        }
+
+        .hint kbd {
+            display: inline-block;
+            background: var(--text);
+            color: var(--bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.6rem;
+            margin: 0 2px;
+        }
+
+        /* Color shift on theme change - --accent-text ensures WCAG AA contrast on accent */
+        body.theme-1 {
+            --bg: #D2FF3A;
+            --text: #1A0BF5;
+            --accent: #FF2D6B;
+            --accent-text: #FFFEF5;
+        }
+
+        body.theme-2 {
+            --bg: #FF2D6B;
+            --text: #FFFEF5;
+            --accent: #D2FF3A;
+            --accent-text: #1A1A1A;
+        }
+
+        body.theme-3 {
+            --bg: #1A0BF5;
+            --text: #D2FF3A;
+            --accent: #FF2D6B;
+            --accent-text: #FFFEF5;
+        }
+
+        body.theme-4 {
+            --bg: #FFFEF5;
+            --text: #1A0BF5;
+            --accent: #FF2D6B;
+            --accent-text: #FFFEF5;
+        }
+
+        body.theme-5 {
+            --bg: #FF8C00;
+            --text: #1A0044;
+            --accent: #D2FF3A;
+            --accent-text: #1A1A1A;
+        }
+
+        body {
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .logo, .question-text, .counter-badge, .nav-btn, .category, .hint, .shuffle-btn, .back-link {
+            transition: all 0.4s ease;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+
+            header {
+                padding: 20px 24px;
+            }
+
+            .logo {
+                font-size: 1.3rem;
+            }
+
+            main {
+                padding: 20px 20px;
+            }
+
+            .question-container {
+                margin: 0 auto;
+                padding: 0 0 16px;
+            }
+
+            .question-text {
+                font-size: clamp(1rem, min(7vw, 9vh), 4.5rem);
+            }
+
+            .category {
+                margin-bottom: 32px;
+            }
+
+            nav {
+                padding: 20px 24px 28px;
+                gap: 12px;
+            }
+
+            .nav-btn {
+                padding: 12px 24px;
+                font-size: 0.8rem;
+            }
+
+            .hint {
+                display: none;
+            }
+
+            /* Scale decorative elements so they don't overlap content */
+            .deco-circle {
+                width: 180px;
+                height: 180px;
+                top: -100px;
+                right: -100px;
+            }
+
+            .deco-circle-2 {
+                width: 120px;
+                height: 120px;
+                bottom: 20px;
+                left: -80px;
+            }
+
+            .deco-star {
+                font-size: 4rem;
+                bottom: 40px;
+                right: 20px;
+            }
+
+            .deco-triangle {
+                border-left-width: 50px;
+                border-right-width: 50px;
+                border-bottom-width: 90px;
+                left: -50px;
+            }
+
+            .deco-blob {
+                width: 100px;
+                height: 70px;
+                right: -40px;
+            }
+
+            .deco-diamond {
+                width: 60px;
+                height: 60px;
+                right: 15%;
+            }
+
+            .deco-squiggle {
+                width: 70px;
+                height: 24px;
+                left: 5%;
+            }
+
+            .deco-star-2 {
+                font-size: 2.5rem;
+                left: 5%;
+            }
+
+            .deco-plus {
+                height: 50px;
+            }
+
+            .deco-plus::after {
+                left: -23px;
+                top: 23px;
+                width: 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 16px 16px;
+                gap: 8px;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+            }
+
+            .back-link {
+                font-size: 0.7rem;
+            }
+
+            .counter-badge {
+                font-size: 0.7rem;
+                padding: 5px 10px;
+            }
+
+            main {
+                padding: 16px 16px;
+            }
+
+            .question-container {
+                padding: 0 0 12px;
+            }
+
+            nav {
+                padding: 16px 16px 24px;
+                gap: 10px;
+            }
+
+            .question-text {
+                font-size: clamp(0.875rem, min(8vw, 8vh), 3rem);
+            }
+
+            .category {
+                font-size: 0.65rem;
+                padding: 5px 12px;
+                margin-bottom: 24px;
+            }
+
+            .nav-btn {
+                padding: 10px 20px;
+                font-size: 0.75rem;
+            }
+
+            .shuffle-btn {
+                font-size: 0.7rem;
+            }
+
+            /* Decorative elements smaller and pushed off-screen on very small viewports */
+            .deco-circle {
+                width: 120px;
+                height: 120px;
+                top: -80px;
+                right: -80px;
+            }
+
+            .deco-circle-2 {
+                width: 80px;
+                height: 80px;
+                bottom: 10px;
+                left: -60px;
+            }
+
+            .deco-star {
+                font-size: 2.5rem;
+                bottom: 24px;
+                right: 10px;
+            }
+
+            .deco-triangle {
+                border-left-width: 35px;
+                border-right-width: 35px;
+                border-bottom-width: 60px;
+                left: -45px;
+            }
+
+            .deco-blob {
+                width: 70px;
+                height: 50px;
+                right: -50px;
+            }
+
+            .deco-diamond {
+                width: 40px;
+                height: 40px;
+            }
+
+            .deco-squiggle {
+                width: 50px;
+                height: 18px;
+            }
+
+            .deco-star-2 {
+                font-size: 1.75rem;
+            }
+
+            .deco-plus {
+                height: 36px;
+            }
+
+            .deco-plus::after {
+                left: -18px;
+                top: 16px;
+                width: 36px;
+            }
+        }
+
+        /* Extra-small viewports (e.g. narrow phones) */
+        @media (max-width: 360px) {
+            header {
+                padding: 12px 12px;
+            }
+
+            .logo {
+                font-size: 1rem;
+            }
+
+            main {
+                padding: 12px 12px;
+            }
+
+            .question-container {
+                padding: 0 0 8px;
+            }
+
+            .question-text {
+                font-size: clamp(0.75rem, min(7vw, 7vh), 2.5rem);
+            }
+
+            .category {
+                margin-bottom: 20px;
+            }
+
+            nav {
+                padding: 12px 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body class="theme-1">
+
+    <!-- Decorative elements -->
+    <div class="deco deco-circle"></div>
+    <div class="deco deco-circle-2"></div>
+    <div class="deco deco-star">✹</div>
+    <div class="deco deco-triangle"></div>
+    <div class="deco deco-blob"></div>
+    <div class="deco deco-diamond"></div>
+    <div class="deco deco-squiggle"></div>
+    <div class="deco deco-star-2">✦</div>
+    <div class="deco deco-plus"></div>
+
+    <header>
+        <div class="header-left">
+            <a href="../../index.html" class="back-link">← Back</a>
+            <div class="header-row">
+                <div class="logo">Cold Open</div>
+                <div class="counter-badge" id="counter">1 / 30</div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="question-container">
+            <div class="category" id="category">Getting Started</div>
+            <div class="question-text" id="question">What's something you changed your mind about recently?</div>
+        </div>
+    </main>
+
+    <nav>
+        <button class="nav-btn" id="prevBtn" onclick="prevQuestion()">← Prev</button>
+        <button class="shuffle-btn" onclick="shuffleQuestions()">Shuffle</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
+    </nav>
+
+    <div class="hint">
+        <kbd>←</kbd> <kbd>→</kbd> to navigate · <kbd>S</kbd> to shuffle
+    </div>
+
+    <script src="questions.js"></script>
+    <script>
+        let currentIndex = 0;
+        const themes = ['theme-1', 'theme-2', 'theme-3', 'theme-4', 'theme-5'];
+        let currentTheme = 0;
+
+        const questionEl = document.getElementById('question');
+        const categoryEl = document.getElementById('category');
+        const counterEl = document.getElementById('counter');
+
+        function updateDisplay(direction = 'next') {
+            // Exit animation
+            questionEl.classList.add('exiting');
+            categoryEl.classList.add('exiting');
+
+            setTimeout(() => {
+                questionEl.textContent = questions[currentIndex].q;
+                categoryEl.textContent = questions[currentIndex].cat;
+                counterEl.textContent = `${currentIndex + 1} / ${questions.length}`;
+
+                questionEl.classList.remove('exiting');
+                questionEl.classList.add('entering');
+                categoryEl.classList.remove('exiting');
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        questionEl.classList.remove('entering');
+                    });
+                });
+            }, 150);
+
+            // Cycle theme
+            document.body.classList.remove(themes[currentTheme]);
+            currentTheme = (currentTheme + 1) % themes.length;
+            document.body.classList.add(themes[currentTheme]);
+        }
+
+        function nextQuestion() {
+            currentIndex = (currentIndex + 1) % questions.length;
+            updateDisplay('next');
+        }
+
+        function prevQuestion() {
+            currentIndex = (currentIndex - 1 + questions.length) % questions.length;
+            updateDisplay('prev');
+        }
+
+        function shuffleQuestions() {
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+            currentIndex = 0;
+            updateDisplay('next');
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextQuestion();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevQuestion();
+            } else if (e.key === 's' || e.key === 'S') {
+                shuffleQuestions();
+            }
+        });
+
+        // Touch swipe support
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextQuestion();
+                else prevQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
